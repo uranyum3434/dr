@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dr. Plant - Profesyonel Blueberry Yatırım Analiz Platformu</title>
+  <style>
+    :root {
+      --primary-color: #2E7D32;
+      --secondary-color: #388E3C;
+      --background: #F1F8E9;
+      --accent-color: #8BC34A;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: var(--background);
+      color: #1B5E20;
+    }
+    .header {
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      margin-bottom: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 30px;
+    }
+    .input-section {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .input-group {
+      margin: 15px 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      align-items: center;
+    }
+    input, select, button {
+      padding: 12px;
+      border: 2px solid #C8E6C9;
+      border-radius: 8px;
+      width: 100%;
+      transition: all 0.3s;
+    }
+    input:focus, select:focus {
+      border-color: var(--accent-color);
+      outline: none;
+    }
+    button {
+      background: var(--primary-color);
+      color: white;
+      cursor: pointer;
+      border: none;
+      font-weight: bold;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    button:hover {
+      background: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #C8E6C9;
+      text-align: left;
+    }
+    th {
+      background-color: #E8F5E9;
+    }
+    .highlight {
+      background-color: #E8F5E9;
+      font-weight: bold;
+    }
+    .city-climate-info, .seedling-params {
+      padding: 15px;
+      background: #F8F9FA;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid var(--accent-color);
+    }
+    .cost-item {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      gap: 10px;
+    }
+    .icon {
+      font-size: 20px;
+      min-width: 30px;
+      text-align: center;
+    }
+    .info-text {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      margin-top: 50px;
+      border-top: 1px solid #ddd;
+    }
+    .results-container {
+      max-height: 500px;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    .tab-container {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    .tab {
+      padding: 10px 20px;
+      background: #E8F5E9;
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      margin-right: 5px;
+    }
+    .tab.active {
+      background: var(--primary-color);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🌿 Dr. Plant - Endüstriyel Blueberry Üretim Simülatörü</h1>
+    <p>Bilimsel Verilerle Tam Ölçekli Tarımsal Yatırım Çözümleri</p>
+  </div>
+
+  <div class="container">
+    <!-- Girdi Bölümü -->
+    <div>
+      <div class="input-section">
+        <h2>📐 Temel Üretim Parametreleri</h2>
+        <div class="input-group">
+          <label>🌍 Toplam Alan (m²):</label>
+          <input type="number" id="area" value="1000" min="100" step="100">
+        </div>
+        <div class="input-group">
+          <label>↔ Sıra Aralığı (m):</label>
+          <input type="number" id="rowSpacing" value="2" step="0.1" min="1" max="3">
+          <span class="info-text">Sıralar arası mesafe (2-3m ideal)</span>
+        </div>
+        <div class="input-group">
+          <label>↕ Bitki Aralığı (m):</label>
+          <input type="number" id="plantSpacing" value="0.5" step="0.1" min="0.3" max="1">
+          <span class="info-text">Bitkiler arası mesafe (0.5m ideal)</span>
+        </div>
+      </div>
+
+      <div class="input-section">
+        <h2>🌦 Bölge ve İklim Parametreleri</h2>
+        <div class="input-group">
+          <label>🏙 Şehir Seçimi:</label>
+          <select id="citySelect" onchange="updateClimate()">
+            <option value="adana">Adana</option>
+            <option value="adiyaman">Adıyaman</option>
+            <option value="afyon">Afyonkarahisar</option>
+            <option value="agri">Ağrı</option>
+            <option value="amasya">Amasya</option>
+            <option value="ankara">Ankara</option>
+            <option value="antalya" selected>Antalya</option>
+            <option value="artvin">Artvin</option>
+            <option value="aydin">Aydın</option>
+            <option value="balikesir">Balıkesir</option>
+            <option value="bilecik">Bilecik</option>
+            <option value="bingol">Bingöl</option>
+            <option value="bitlis">Bitlis</option>
+            <option value="bolu">Bolu</option>
+            <option value="burdur">Burdur</option>
+            <option value="bursa">Bursa</option>
+            <option value="canakkale">Çanakkale</option>
+            <option value="cankiri">Çankırı</option>
+            <option value="corum">Çorum</option>
+            <option value="denizli">Denizli</option>
+            <option value="diyarbakir">Diyarbakır</option>
+            <option value="edirne">Edirne</option>
+            <option value="elazig">Elazığ</option>
+            <option value="erzincan">Erzincan</option>
+            <option value="erzurum">Erzurum</option>
+            <option value="eskisehir">Eskişehir</option>
+            <option value="gaziantep">Gaziantep</option>
+            <option value="giresun">Giresun</option>
+            <option value="gumushane">Gümüşhane</option>
+            <option value="hakkari">Hakkari</option>
+            <option value="hatay">Hatay</option>
+            <option value="isparta">Isparta</option>
+            <option value="mersin">Mersin</option>
+            <option value="istanbul">İstanbul</option>
+            <option value="izmir">İzmir</option>
+            <option value="kars">Kars</option>
+            <option value="kastamonu">Kastamonu</option>
+            <option value="kayseri">Kayseri</option>
+            <option value="kirklareli">Kırklareli</option>
+            <option value="kirsehir">Kırşehir</option>
+            <option value="kocaeli">Kocaeli</option>
+            <option value="konya">Konya</option>
+            <option value="kutahya">Kütahya</option>
+            <option value="malatya">Malatya</option>
+            <option value="manisa">Manisa</option>
+            <option value="kahramanmaras">Kahramanmaraş</option>
+            <option value="mardin">Mardin</option>
+            <option value="mugla">Muğla</option>
+            <option value="mus">Muş</option>
+            <option value="nevsehir">Nevşehir</option>
+            <option value="nigde">Niğde</option>
+            <option value="ordu">Ordu</option>
+            <option value="rize">Rize</option>
+            <option value="sakarya">Sakarya</option>
+            <option value="samsun">Samsun</option>
+            <option value="siirt">Siirt</option>
+            <option value="sinop">Sinop</option>
+            <option value="sivas">Sivas</option>
+            <option value="tekirdag">Tekirdağ</option>
+            <option value="tokat">Tokat</option>
+            <option value="trabzon">Trabzon</option>
+            <option value="tunceli">Tunceli</option>
+            <option value="sanliurfa">Şanlıurfa</option>
+            <option value="usak">Uşak</option>
+            <option value="van">Van</option>
+            <option value="yalova">Yalova</option>
+            <option value="yozgat">Yozgat</option>
+            <option value="zonguldak">Zonguldak</option>
+          </select>
+        </div>
+        <div class="city-climate-info" id="climateInfo">
+          <h4>🌡 Bölge İklim Verileri</h4>
+          <p>🌡 Ortalama Sıcaklık: <span id="avgTemp">-</span>°C</p>
+          <p>💧 Yıllık Yağış: <span id="annualRain">-</span> mm</p>
+          <p>💦 Nem Oranı: <span id="humidity">-</span>%</p>
+          <p>📅 Hasat Dönemi: <span id="harvestPeriod">-</span></p>
+          <p>⏳ Hasat Süresi: <span id="harvestSeasonLength">-</span> gün</p>
+        </div>
+      </div>
+
+      <div class="input-section">
+        <h2>🪴 Saksı ve Substrat Bilgileri</h2>
+        <div class="input-group">
+          <label>📦 Saksı Boyutu:</label>
+          <select id="potVolume">
+            <option value="25">25 Litre (Küçük)</option>
+            <option value="27">27 Litre</option>
+            <option value="30" selected>30 Litre (Standart)</option>
+            <option value="40">40 Litre (Büyük)</option>
+            <option value="45">45 Litre (Premium)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>🪴 Saksı Fiyatı (₺/adet):</label>
+          <input type="number" id="potPrice" value="45">
+        </div>
+        <div class="input-group">
+          <label>🌿 Cocopeat Fiyatı (₺/m³):</label>
+          <input type="number" id="cocopeatPrice" value="1800">
+        </div>
+        <div class="input-group">
+          <label>🌱 Fidan Fiyatı (₺/adet):</label>
+          <input type="number" id="seedlingPrice" value="35">
+        </div>
+      </div>
+
+      <!-- Fidan Kültürleri ve Türü Bölümü -->
+      <div class="input-section" id="cultivar-section">
+        <h2>🌱 Fidan Kültürleri</h2>
+        <div class="input-group">
+          <label>Fidan Kültürü Seçimi:</label>
+          <select id="cultivarSelect" onchange="checkCultivarExtra(); updateSeedlingParameters()">
+            <!-- Öneriler şehir seçimine göre dinamik doldurulacak -->
+          </select>
+        </div>
+        <div class="input-group" id="extraCultivarCostField" style="display:none">
+          <label>Ek Fidan İşleme Maliyeti (₺/adet):</label>
+          <input type="number" id="extraCultivarCost" value="5">
+        </div>
+      </div>
+
+      <!-- Fidan Türüne Ait Parametreler -->
+      <div class="input-section seedling-params" id="seedlingParamsSection">
+        <h2>📋 Fidan Parametreleri</h2>
+        <div id="seedlingParamsContent">
+          <!-- Seçilen fidan kültürüne göre parametreler burada gösterilecek -->
+        </div>
+      </div>
+
+      <div class="input-section">
+        <h2>💧 Sulama Sistemi Maliyetleri</h2>
+        <div class="cost-item">
+          <span class="icon">💻</span>
+          <input type="number" id="automationCost" value="7500" placeholder="Otomasyon Sistemi (₺)">
+          <span class="info-text">Tam otomatik sulama kontrol sistemi</span>
+        </div>
+        <div class="cost-item">
+          <span class="icon">🚰</span>
+          <input type="number" id="mainPipeCost" value="12" placeholder="Ana Boru (₺/m)">
+          <span class="info-text">Ana dağıtım boru maliyeti</span>
+        </div>
+        <div class="cost-item">
+          <span class="icon">🕹</span>
+          <input type="number" id="lateralPipeCost" value="6" placeholder="Lateral Boru (₺/m)">
+          <span class="info-text">Bitki sıralarına giden borular</span>
+        </div>
+        <div class="cost-item">
+          <span class="icon">💧</span>
+          <input type="number" id="dripperCost" value="2.5" placeholder="Damlatıcı (₺/adet)">
+          <span class="info-text">Bitki başına 4 adet damlatıcı</span>
+        </div>
+      </div>
+
+      <div class="input-section">
+        <h2>👷 İşçilik ve Hasat Parametreleri</h2>
+        <div class="input-group">
+          <label>👨🌾 İşçi Başı Günlük Verim (kg):</label>
+          <input type="number" id="workerEfficiency" value="18">
+        </div>
+        <div class="input-group">
+          <label>💰 Günlük İşçi Ücreti (₺):</label>
+          <input type="number" id="dailyWage" value="350">
+        </div>
+        <div class="input-group">
+          <label>📈 Satış Fiyatı (₺/kg):</label>
+          <input type="number" id="salePrice" value="40">
+        </div>
+      </div>
+
+      <button onclick="calculateAll()">🚀 TÜM HESAPLAMALARI YAP</button>
+    </div>
+
+    <!-- Sonuçlar Bölümü -->
+    <div>
+      <div class="input-section">
+        <h2>📊 Detaylı Analiz Sonuçları</h2>
+        <div class="tab-container">
+          <div class="tab active" onclick="showTab('production')">Üretim Bilgileri</div>
+          <div class="tab" onclick="showTab('investment')">Yatırım Maliyetleri</div>
+          <div class="tab" onclick="showTab('operation')">İşletme Maliyetleri</div>
+          <div class="tab" onclick="showTab('projection')">7 Yıllık Projeksiyon</div>
+        </div>
+        <div class="results-container">
+          <div id="production-tab">
+            <h3>🌿 Üretim Bilgileri</h3>
+            <table>
+              <tr>
+                <td>Toplam Bitki Sayısı</td>
+                <td id="totalPlants">0</td>
+              </tr>
+              <tr>
+                <td>Metrekareye Düşen Fidan</td>
+                <td id="plantPerSqm">0</td>
+              </tr>
+              <tr>
+                <td>Gerekli Cocopeat Miktarı</td>
+                <td id="totalCocopeat">0 m³</td>
+              </tr>
+              <tr>
+                <td>Yıllık Su İhtiyacı</td>
+                <td id="waterNeed">0 m³</td>
+              </tr>
+              <tr>
+                <td>Yıllık Substrat Yenileme</td>
+                <td id="substrateRenewal">0 m³</td>
+              </tr>
+            </table>
+          </div>
+          <div id="investment-tab" style="display:none">
+            <h3>🏗 Yatırım Maliyetleri</h3>
+            <table>
+              <tr>
+                <td>🪴 Saksılar</td>
+                <td id="potCost">0 ₺</td>
+              </tr>
+              <tr>
+                <td>🌿 Cocopeat</td>
+                <td id="cocopeatCost">0 ₺</td>
+              </tr>
+              <tr>
+                <td>🌱 Fidanlar</td>
+                <td id="seedlingCost">0 ₺</td>
+              </tr>
+              <tr>
+                <td>💻 Otomasyon</td>
+                <td id="automationTotal">0 ₺</td>
+              </tr>
+              <tr>
+                <td>🚰 Ana Boru</td>
+                <td id="mainPipeTotal">0 ₺</td>
+              </tr>
+              <tr>
+                <td>🕹 Lateral Boru</td>
+                <td id="lateralPipeTotal">0 ₺</td>
+              </tr>
+              <tr>
+                <td>💧 Damlatıcılar</td>
+                <td id="drippersTotal">0 ₺</td>
+              </tr>
+              <tr class="highlight">
+                <td>Toplam Yatırım</td>
+                <td id="totalInvestment">0 ₺</td>
+              </tr>
+            </table>
+          </div>
+          <div id="operation-tab" style="display:none">
+            <h3>🏭 İşletme Maliyetleri</h3>
+            <table>
+              <tr>
+                <td>⌛ Hasat Süresi</td>
+                <td id="harvestDuration">0 gün</td>
+              </tr>
+              <tr>
+                <td>👥 Gerekli İşçi Sayısı</td>
+                <td id="workersNeeded">0</td>
+              </tr>
+              <tr>
+                <td>💸 Toplam İşçilik Maliyeti</td>
+                <td id="totalLaborCost">0 ₺</td>
+              </tr>
+              <tr>
+                <td>💧 Yıllık Su Maliyeti</td>
+                <td id="waterCost">0 ₺</td>
+              </tr>
+              <tr>
+                <td>🌿 Yıllık Substrat Maliyeti</td>
+                <td id="substrateCost">0 ₺</td>
+              </tr>
+              <tr class="highlight">
+                <td>Toplam Yıllık İşletme Maliyeti</td>
+                <td id="totalOperationCost">0 ₺</td>
+              </tr>
+            </table>
+          </div>
+          <div id="projection-tab" style="display:none">
+            <h3>📈 7 Yıllık Projeksiyon</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Yıl</th>
+                  <th>Üretim (ton)</th>
+                  <th>Gelir (₺)</th>
+                  <th>Maliyet (₺)</th>
+                  <th>Net Kâr (₺)</th>
+                  <th>ROI (%)</th>
+                </tr>
+              </thead>
+              <tbody id="projection"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Designed by Yusuf Asci | Dr. Plant Tarımsal Çözümler © 2023 | Veriler akademik kaynaklardan derlenmiştir
+  </footer>
+
+  <script>
+    // Şehir ve İklim Bilgileri (örnek değerler)
+    const cityData = {
+      adana:      { temp: 19.2, rain: 890,  humidity: 67, harvest: "Nisan-Haziran",    season: 70 },
+      adiyaman:   { temp: 16.5, rain: 710,  humidity: 58, harvest: "Mayıs-Temmuz",     season: 65 },
+      afyon:      { temp: 11.8, rain: 530,  humidity: 62, harvest: "Temmuz-Eylül",     season: 55 },
+      agri:       { temp: 9.5,  rain: 560,  humidity: 65, harvest: "Ağustos-Ekim",     season: 45 },
+      amasya:     { temp: 14.1, rain: 470,  humidity: 68, harvest: "Temmuz-Eylül",     season: 60 },
+      ankara:     { temp: 12.5, rain: 400,  humidity: 62, harvest: "Ağustos-Ekim",     season: 50 },
+      antalya:    { temp: 19.5, rain: 1070, humidity: 65, harvest: "Mayıs-Temmuz",     season: 70 },
+      artvin:     { temp: 14.3, rain: 1250, humidity: 75, harvest: "Ağustos-Ekim",     season: 50 },
+      aydin:      { temp: 17.8, rain: 680,  humidity: 64, harvest: "Haziran-Ağustos",  season: 65 },
+      balikesir:  { temp: 15.0, rain: 700,  humidity: 70, harvest: "Haziran-Ağustos",  season: 60 },
+      bilecik:    { temp: 13.0, rain: 600,  humidity: 65, harvest: "Temmuz-Eylül",     season: 55 },
+      bingol:     { temp: 10.0, rain: 500,  humidity: 60, harvest: "Ağustos-Ekim",     season: 50 },
+      bitlis:     { temp: 11.0, rain: 450,  humidity: 55, harvest: "Eylül-Ekim",       season: 45 },
+      bolu:       { temp: 12.0, rain: 800,  humidity: 75, harvest: "Haziran-Ağustos",  season: 60 },
+      burdur:     { temp: 16.0, rain: 600,  humidity: 55, harvest: "Nisan-Haziran",    season: 70 },
+      bursa:      { temp: 14.5, rain: 900,  humidity: 70, harvest: "Temmuz-Eylül",     season: 60 },
+      canakkale:  { temp: 16.0, rain: 650,  humidity: 60, harvest: "Haziran-Ağustos",  season: 60 },
+      cankiri:    { temp: 13.0, rain: 500,  humidity: 55, harvest: "Ağustos-Ekim",     season: 50 },
+      corum:      { temp: 12.0, rain: 550,  humidity: 60, harvest: "Temmuz-Eylül",     season: 55 },
+      denizli:    { temp: 18.0, rain: 800,  humidity: 65, harvest: "Mayıs-Temmuz",     season: 65 },
+      diyarbakir: { temp: 20.0, rain: 400,  humidity: 40, harvest: "Mart-Mayıs",       season: 75 },
+      edirne:     { temp: 15.0, rain: 700,  humidity: 70, harvest: "Mayıs-Temmuz",     season: 60 },
+      elazig:     { temp: 17.0, rain: 450,  humidity: 50, harvest: "Haziran-Ağustos",  season: 55 },
+      erzincan:   { temp: 10.0, rain: 400,  humidity: 50, harvest: "Temmuz-Eylül",     season: 50 },
+      erzurum:    { temp: 7.0,  rain: 500,  humidity: 55, harvest: "Ağustos-Ekim",     season: 45 },
+      eskisehir:  { temp: 13.0, rain: 600,  humidity: 65, harvest: "Haziran-Ağustos",  season: 60 },
+      gaziantep:  { temp: 18.0, rain: 300,  humidity: 40, harvest: "Şubat-Nisan",      season: 80 },
+      giresun:    { temp: 15.0, rain: 1200, humidity: 80, harvest: "Eylül-Ekim",       season: 50 },
+      gumushane:  { temp: 12.0, rain: 800,  humidity: 70, harvest: "Temmuz-Eylül",     season: 55 },
+      hakkari:    { temp: 8.0,  rain: 400,  humidity: 50, harvest: "Ağustos-Ekim",     season: 40 },
+      hatay:      { temp: 18.0, rain: 800,  humidity: 60, harvest: "Mart-Mayıs",       season: 70 },
+      isparta:    { temp: 15.0, rain: 550,  humidity: 65, harvest: "Haziran-Ağustos",  season: 60 },
+      mersin:     { temp: 19.0, rain: 900,  humidity: 70, harvest: "Mayıs-Temmuz",     season: 70 },
+      istanbul:   { temp: 14.2, rain: 850,  humidity: 75, harvest: "Temmuz-Eylül",     season: 60 },
+      izmir:      { temp: 17.8, rain: 710,  humidity: 68, harvest: "Haziran-Ağustos",  season: 60 },
+      kars:       { temp: 6.0,  rain: 400,  humidity: 60, harvest: "Ağustos-Ekim",     season: 45 },
+      kastamonu:  { temp: 11.0, rain: 600,  humidity: 65, harvest: "Temmuz-Eylül",     season: 55 },
+      kayseri:    { temp: 12.0, rain: 500,  humidity: 60, harvest: "Ağustos-Ekim",     season: 50 },
+      kirklareli: { temp: 14.0, rain: 700,  humidity: 70, harvest: "Mayıs-Temmuz",     season: 60 },
+      kirsehir:   { temp: 13.0, rain: 450,  humidity: 55, harvest: "Haziran-Ağustos",  season: 50 },
+      kocaeli:    { temp: 15.0, rain: 900,  humidity: 75, harvest: "Mayıs-Temmuz",     season: 60 },
+      konya:      { temp: 14.0, rain: 350,  humidity: 40, harvest: "Ağustos-Ekim",     season: 55 },
+      kutahya:    { temp: 12.0, rain: 500,  humidity: 55, harvest: "Temmuz-Eylül",     season: 50 },
+      malatya:    { temp: 16.0, rain: 400,  humidity: 50, harvest: "Nisan-Haziran",    season: 65 },
+      manisa:     { temp: 18.0, rain: 600,  humidity: 60, harvest: "Haziran-Ağustos",  season: 65 },
+      kahramanmaras: { temp: 16.0, rain: 500, humidity: 55, harvest: "Mayıs-Temmuz",   season: 60 },
+      mardin:     { temp: 17.0, rain: 300,  humidity: 40, harvest: "Mart-Mayıs",       season: 70 },
+      mugla:      { temp: 19.0, rain: 1000, humidity: 70, harvest: "Haziran-Ağustos",  season: 65 },
+      mus:        { temp: 11.0, rain: 450,  humidity: 60, harvest: "Temmuz-Eylül",     season: 50 },
+      nevsehir:   { temp: 10.0, rain: 350,  humidity: 40, harvest: "Temmuz-Eylül",     season: 45 },
+      nigde:      { temp: 11.0, rain: 400,  humidity: 50, harvest: "Ağustos-Ekim",     season: 50 },
+      ordu:       { temp: 15.0, rain: 1100, humidity: 80, harvest: "Eylül-Ekim",       season: 55 },
+      rize:       { temp: 14.0, rain: 1500, humidity: 85, harvest: "Eylül-Ekim",       season: 45 },
+      sakarya:    { temp: 14.0, rain: 800,  humidity: 70, harvest: "Mayıs-Temmuz",     season: 60 },
+      samsun:     { temp: 15.0, rain: 900,  humidity: 75, harvest: "Haziran-Ağustos",  season: 60 },
+      siirt:      { temp: 13.0, rain: 300,  humidity: 45, harvest: "Eylül-Ekim",       season: 50 },
+      sinop:      { temp: 14.0, rain: 950,  humidity: 80, harvest: "Haziran-Ağustos",  season: 60 },
+      sivas:      { temp: 10.0, rain: 500,  humidity: 50, harvest: "Ağustos-Ekim",     season: 50 },
+      tekirdag:   { temp: 15.0, rain: 750,  humidity: 70, harvest: "Mayıs-Temmuz",     season: 60 },
+      tokat:      { temp: 12.0, rain: 600,  humidity: 65, harvest: "Temmuz-Eylül",     season: 55 },
+      trabzon:    { temp: 16.0, rain: 1800, humidity: 85, harvest: "Eylül-Ekim",       season: 50 },
+      tunceli:    { temp: 11.0, rain: 550,  humidity: 65, harvest: "Haziran-Ağustos",  season: 50 },
+      sanliurfa:  { temp: 20.0, rain: 300,  humidity: 35, harvest: "Mart-Mayıs",       season: 70 },
+      usak:       { temp: 14.0, rain: 700,  humidity: 60, harvest: "Haziran-Ağustos",  season: 60 },
+      van:        { temp: 12.0, rain: 600,  humidity: 55, harvest: "Temmuz-Eylül",     season: 45 },
+      yalova:     { temp: 16.0, rain: 800,  humidity: 65, harvest: "Mayıs-Temmuz",     season: 60 },
+      yozgat:     { temp: 11.0, rain: 500,  humidity: 55, harvest: "Ağustos-Ekim",     season: 50 },
+      zonguldak:  { temp: 14.0, rain: 1000, humidity: 75, harvest: "Haziran-Ağustos",  season: 60 }
+    };
+
+    // Tüm fidan kültürü/türü listesi
+    const allCultivars = [
+      "Bluecrop", "Duke", "Legacy", "Misty", "Sunshine Blue",
+      "Elliott", "Chandler", "Aurora", "Biloxi", "Jersey", "O'Neal"
+    ];
+    
+    // Her şehir için aynı tam listeyi kullanıyoruz
+    const cultivarRecommendations = {
+      adana: allCultivars,
+      adiyaman: allCultivars,
+      afyon: allCultivars,
+      agri: allCultivars,
+      amasya: allCultivars,
+      ankara: allCultivars,
+      antalya: allCultivars,
+      artvin: allCultivars,
+      aydin: allCultivars,
+      balikesir: allCultivars,
+      bilecik: allCultivars,
+      bingol: allCultivars,
+      bitlis: allCultivars,
+      bolu: allCultivars,
+      burdur: allCultivars,
+      bursa: allCultivars,
+      canakkale: allCultivars,
+      cankiri: allCultivars,
+      corum: allCultivars,
+      denizli: allCultivars,
+      diyarbakir: allCultivars,
+      edirne: allCultivars,
+      elazig: allCultivars,
+      erzincan: allCultivars,
+      erzurum: allCultivars,
+      eskisehir: allCultivars,
+      gaziantep: allCultivars,
+      giresun: allCultivars,
+      gumushane: allCultivars,
+      hakkari: allCultivars,
+      hatay: allCultivars,
+      isparta: allCultivars,
+      mersin: allCultivars,
+      istanbul: allCultivars,
+      izmir: allCultivars,
+      kars: allCultivars,
+      kastamonu: allCultivars,
+      kayseri: allCultivars,
+      kirklareli: allCultivars,
+      kirsehir: allCultivars,
+      kocaeli: allCultivars,
+      konya: allCultivars,
+      kutahya: allCultivars,
+      malatya: allCultivars,
+      manisa: allCultivars,
+      kahramanmaras: allCultivars,
+      mardin: allCultivars,
+      mugla: allCultivars,
+      mus: allCultivars,
+      nevsehir: allCultivars,
+      nigde: allCultivars,
+      ordu: allCultivars,
+      rize: allCultivars,
+      sakarya: allCultivars,
+      samsun: allCultivars,
+      siirt: allCultivars,
+      sinop: allCultivars,
+      sivas: allCultivars,
+      tekirdag: allCultivars,
+      tokat: allCultivars,
+      trabzon: allCultivars,
+      tunceli: allCultivars,
+      sanliurfa: allCultivars,
+      usak: allCultivars,
+      van: allCultivars,
+      yalova: allCultivars,
+      yozgat: allCultivars,
+      zonguldak: allCultivars,
+      default: allCultivars
+    };
+
+    // Fidan türlerinin parametreleri
+    const seedlingParameters = {
+      "Bluecrop":     { soilDepth: "30 cm", watering: "Günde 2 kez",     sunlight: "Tam güneş", fertilizer: "Aylık" },
+      "Duke":         { soilDepth: "35 cm", watering: "Günde 2-3 kez",   sunlight: "Yarı gölge", fertilizer: "İki ayda bir" },
+      "Legacy":       { soilDepth: "32 cm", watering: "Günde 2 kez",     sunlight: "Tam güneş", fertilizer: "Aylık" },
+      "Misty":        { soilDepth: "30 cm", watering: "Günde 3 kez",     sunlight: "Tam güneş", fertilizer: "Aylık", extraCost: 5 },
+      "Sunshine Blue":{ soilDepth: "33 cm", watering: "Günde 2 kez",     sunlight: "Tam güneş", fertilizer: "Aylık" },
+      "Elliott":      { soilDepth: "30 cm", watering: "Günde 2 kez",     sunlight: "Tam güneş", fertilizer: "Aylık" },
+      "Chandler":     { soilDepth: "32 cm", watering: "Günde 2-3 kez",   sunlight: "Tam güneş", fertilizer: "Aylık" },
+      "Aurora":       { soilDepth: "28 cm", watering: "Günde 2 kez",     sunlight: "Tam güneş", fertilizer: "Aylık" },
+      "Biloxi":       { soilDepth: "30 cm", watering: "Günde 2 kez",     sunlight: "Tam güneş", fertilizer: "Aylık" },
+      "Jersey":       { soilDepth: "30 cm", watering: "Günde 2 kez",     sunlight: "Tam güneş", fertilizer: "Aylık" },
+      "O'Neal":      { soilDepth: "33 cm", watering: "Günde 2 kez",     sunlight: "Tam güneş", fertilizer: "Aylık" }
+    };
+
+    // Şehir bilgileri güncelleme ve fidan kültürü önerisini ayarlama
+    function updateClimate() {
+      const city = document.getElementById('citySelect').value;
+      const cityInfo = cityData[city] || { temp: '-', rain: '-', humidity: '-', harvest: '-', season: '-' };
+      document.getElementById('avgTemp').textContent = cityInfo.temp;
+      document.getElementById('annualRain').textContent = cityInfo.rain;
+      document.getElementById('humidity').textContent = cityInfo.humidity;
+      document.getElementById('harvestPeriod').textContent = cityInfo.harvest;
+      document.getElementById('harvestSeasonLength').textContent = cityInfo.season;
+      updateCultivar(); // Fidan kültürü önerilerini güncelle
+    }
+
+    function updateCultivar() {
+      const city = document.getElementById('citySelect').value;
+      const rec = cultivarRecommendations[city] || cultivarRecommendations["default"];
+      const select = document.getElementById('cultivarSelect');
+      select.innerHTML = "";
+      rec.forEach(cultivar => {
+        const option = document.createElement("option");
+        option.value = cultivar;
+        option.textContent = cultivar;
+        select.appendChild(option);
+      });
+      checkCultivarExtra();
+      updateSeedlingParameters();
+    }
+
+    function checkCultivarExtra() {
+      const select = document.getElementById('cultivarSelect');
+      const selected = select.value;
+      const extraField = document.getElementById('extraCultivarCostField');
+      // Eğer "Misty" seçildiyse ekstra fidan işleme maliyeti alanını göster.
+      if (selected === "Misty") {
+        extraField.style.display = "grid";
+      } else {
+        extraField.style.display = "none";
+      }
+    }
+
+    // Seçilen fidan türünün parametrelerini güncelle
+    function updateSeedlingParameters() {
+      const select = document.getElementById('cultivarSelect');
+      const selected = select.value;
+      const params = seedlingParameters[selected];
+      const container = document.getElementById('seedlingParamsContent');
+      if (params) {
+        container.innerHTML = `
+          <p><strong>Toprak Derinliği:</strong> ${params.soilDepth}</p>
+          <p><strong>Sulama:</strong> ${params.watering}</p>
+          <p><strong>Güneş Işığı:</strong> ${params.sunlight}</p>
+          <p><strong>Gübreleme:</strong> ${params.fertilizer}</p>
+        `;
+        if (params.extraCost) {
+          container.innerHTML += <p><strong>Ek İşleme Maliyeti:</strong> ${params.extraCost} ₺/adet</p>;
+        }
+      } else {
+        container.innerHTML = <p>Parametre bilgisi bulunamadı.</p>;
+      }
+    }
+
+    function showTab(tabName) {
+      document.querySelectorAll('[id$="-tab"]').forEach(tab => {
+        tab.style.display = 'none';
+      });
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.getElementById(tabName + '-tab').style.display = 'block';
+      event.currentTarget.classList.add('active');
+    }
+
+    function calculateAll() {
+      // Temel parametreler
+      const area = parseFloat(document.getElementById('area').value);
+      const rowSpacing = parseFloat(document.getElementById('rowSpacing').value);
+      const plantSpacing = parseFloat(document.getElementById('plantSpacing').value);
+      const plantDensity = 1 / (rowSpacing * plantSpacing);
+      const totalPlants = Math.floor(area * plantDensity);
+      
+      // Saksı ve substrat hesaplamaları
+      const potVolume = parseFloat(document.getElementById('potVolume').value);
+      const cocopeatNeeded = (totalPlants * potVolume) / 1000; // m³
+      const annualSubstrateRenewal = cocopeatNeeded * 0.2; // %20 yenileme
+      
+      // Su ihtiyacı (bitki başına günlük 5L, 180 gün)
+      const waterNeed = (totalPlants * 5 * 180) / 1000; // m³
+      
+      // Sulama sistemi maliyetleri
+      const irrigation = {
+        automation: parseFloat(document.getElementById('automationCost').value),
+        mainPipe: area * parseFloat(document.getElementById('mainPipeCost').value),
+        lateralPipe: totalPlants * 1.5 * parseFloat(document.getElementById('lateralPipeCost').value),
+        drippers: totalPlants * 4 * parseFloat(document.getElementById('dripperCost').value)
+      };
+      
+      // Diğer maliyetler
+      const potCost = totalPlants * parseFloat(document.getElementById('potPrice').value);
+      const cocopeatCost = cocopeatNeeded * parseFloat(document.getElementById('cocopeatPrice').value);
+      let seedlingCost = totalPlants * parseFloat(document.getElementById('seedlingPrice').value);
+      
+      // Eğer "Misty" için ek maliyet alanı görünüyorsa ekle.
+      if (document.getElementById('extraCultivarCostField').style.display !== 'none') {
+        seedlingCost += totalPlants * parseFloat(document.getElementById('extraCultivarCost').value);
+      }
+      
+      // Hasat hesaplamaları
+      const city = document.getElementById('citySelect').value;
+      const harvestDays = cityData[city].season;
+      const workerEfficiency = parseFloat(document.getElementById('workerEfficiency').value);
+      const totalYield = totalPlants * 5; // kg (5kg/bitki)
+      const workersNeeded = Math.ceil(totalYield / (harvestDays * workerEfficiency));
+      const laborCost = workersNeeded * harvestDays * parseFloat(document.getElementById('dailyWage').value);
+      
+      // Su ve substrat maliyetleri (su: 10 TL/m³)
+      const waterCost = waterNeed * 10;
+      const substrateCost = annualSubstrateRenewal * parseFloat(document.getElementById('cocopeatPrice').value);
+      
+      const totalInvestment = potCost + cocopeatCost + seedlingCost +
+                              irrigation.automation + irrigation.mainPipe +
+                              irrigation.lateralPipe + irrigation.drippers;
+      
+      const annualOperationCost = laborCost + waterCost + substrateCost;
+      
+      // Sonuçların güncellenmesi
+      document.getElementById('totalPlants').textContent = totalPlants.toLocaleString('tr');
+      document.getElementById('plantPerSqm').textContent = plantDensity.toFixed(2);
+      document.getElementById('totalCocopeat').textContent = cocopeatNeeded.toFixed(1) + " m³";
+      document.getElementById('waterNeed').textContent = waterNeed.toFixed(1) + " m³";
+      document.getElementById('substrateRenewal').textContent = annualSubstrateRenewal.toFixed(1) + " m³";
+      
+      document.getElementById('potCost').textContent = potCost.toLocaleString('tr') + " ₺";
+      document.getElementById('cocopeatCost').textContent = cocopeatCost.toLocaleString('tr') + " ₺";
+      document.getElementById('seedlingCost').textContent = seedlingCost.toLocaleString('tr') + " ₺";
+      document.getElementById('automationTotal').textContent = irrigation.automation.toLocaleString('tr') + " ₺";
+      document.getElementById('mainPipeTotal').textContent = irrigation.mainPipe.toLocaleString('tr') + " ₺";
+      document.getElementById('lateralPipeTotal').textContent = irrigation.lateralPipe.toLocaleString('tr') + " ₺";
+      document.getElementById('drippersTotal').textContent = irrigation.drippers.toLocaleString('tr') + " ₺";
+      document.getElementById('totalInvestment').textContent = totalInvestment.toLocaleString('tr') + " ₺";
+      
+      document.getElementById('harvestDuration').textContent = harvestDays + " gün";
+      document.getElementById('workersNeeded').textContent = workersNeeded;
+      document.getElementById('totalLaborCost').textContent = laborCost.toLocaleString('tr') + " ₺";
+      document.getElementById('waterCost').textContent = waterCost.toLocaleString('tr') + " ₺";
+      document.getElementById('substrateCost').textContent = substrateCost.toLocaleString('tr') + " ₺";
+      document.getElementById('totalOperationCost').textContent = annualOperationCost.toLocaleString('tr') + " ₺";
+      
+      // Projeksiyon hesaplaması (7 yıl)
+      let projectionHTML = '';
+      const salePrice = parseFloat(document.getElementById('salePrice').value);
+      for (let year = 1; year <= 7; year++) {
+        const yieldFactor = [0.3, 0.6, 0.8, 1, 1, 1, 1][year - 1];
+        const production = (totalPlants * 5 * yieldFactor) / 1000; // ton
+        const revenue = production * 1000 * salePrice;
+        const cost = year === 1 ? totalInvestment + annualOperationCost : annualOperationCost;
+        const profit = revenue - cost;
+        const roi = year === 1 ? 0 : Math.round((profit / totalInvestment) * 100);
+        projectionHTML += `
+          <tr>
+            <td>${year}</td>
+            <td>${production.toFixed(1)}</td>
+            <td>${revenue.toLocaleString('tr')}</td>
+            <td>${cost.toLocaleString('tr')}</td>
+            <td>${profit.toLocaleString('tr')}</td>
+            <td>${year === 1 ? '-' : roi + '%'}</td>
+          </tr>
+        `;
+      }
+      document.getElementById('projection').innerHTML = projectionHTML;
+    }
+
+    // İlk yükleme
+    updateClimate();
+    calculateAll();
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+  <title>Hello, World!</title>
+</head>
+<body>
+  <h1>
+    Hello, World!
+  </h1>
+</body>
+</html><!DOCTYPE html>
+
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+  <title>Hello, World!</title>
+</head>
+<body>
+  <h1>
+    Hello, World!
+  </h1>
+</body>
+</html>
